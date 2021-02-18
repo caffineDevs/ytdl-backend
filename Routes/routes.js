@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
   res.send(info);
 });
 
-router.get("/download", async (req, res) => {
+router.post("/download", async (req, res) => {
   let filePath = `./outfile.${req.body.extension}`;
 
   downloadFile(req.body.url, filePath).then((data) => {
