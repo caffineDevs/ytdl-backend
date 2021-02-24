@@ -2,7 +2,11 @@ const router = require("express").Router();
 const ytdl = require("ytdl-core");
 const axios = require("axios");
 const fs = require('fs');
+var cors = require('cors');
+
 let filename;
+
+
 
 router.post("/", async (req, res) => {
   let info = await ytdl.getInfo(req.body.url);
@@ -10,11 +14,19 @@ router.post("/", async (req, res) => {
   res.send(info);
 });
 
-router.post("/download", async (req, res) => {
+router.post("/download", cors(), async (req, res) => {
   let filePath = `./outfile.${req.body.extension}`;
+  const options = {
+    headers: {
+        'x-timestamp': Date.now(),
+        'x-sent': true,
+        'content-disposition': "attachment; filename=" + filename, // gets ignored
+        'content-type': "video/mp4"
+    }
+}
 
   downloadFile(req.body.url, filePath).then((data) => {
-    res.download(filePath, filename, function (err) {
+    res.download(filePath, filename, options, function (err) {
       fs.unlink(filePath, function () {
         console.log("File was deleted");
       });
